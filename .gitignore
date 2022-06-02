@@ -282,3 +282,7 @@ cython_debug/
 .idea/
 .KoBART-summarization/
 
+./dataset/caption_encode.tsv
+./dataset/caption_encode.zip
+outs.zip
+
