@@ -2,11 +2,13 @@ import os
 import csv
 import json
 import tqdm
+import random as rd
 import pandas as pd
 
 out_path = '../outs'
 caption_path = '../MSCOCO_korean_caption'
-tsv_path = 'caption_encode.tsv'
+tsv_path_train = 'caption_encode_train.tsv'
+tsv_path_test = 'caption_encode_test.tsv'
 
 out_files = os.listdir(out_path)
 encoding = []
@@ -32,8 +34,19 @@ for i in tqdm.tqdm(range(len(encoding))):
         data.append((capt, encoding[i][1]))
         # print((capt, encoding[i][1]))
 
-print(len(data))
-df = pd.DataFrame(data, columns=['caption', 'encoding'])
-print(df.head())
-print(df.shape)
-df.to_csv(tsv_path, sep='\t', index=False, encoding='utf-8')
+n_data = len(data)
+print(n_data)
+rd.shuffle(data)
+test_split = 0.1
+train_data, test_data = data[int(test_split*n_data):], data[:int(test_split*n_data)]
+print(f'train {len(train_data)}')
+print(f'test {len(test_data)}')
+train_df = pd.DataFrame(train_data, columns=['caption', 'encoding'])
+print(train_df.head())
+print(train_df.shape)
+train_df.to_csv(tsv_path_train, sep='\t', index=False, encoding='utf-8')
+
+test_df = pd.DataFrame(test_data, columns=['caption', 'encoding'])
+print(test_df.head())
+print(test_df.shape)
+test_df.to_csv(tsv_path_test, sep='\t', index=False, encoding='utf-8')
