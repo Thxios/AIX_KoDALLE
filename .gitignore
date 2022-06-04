@@ -285,4 +285,7 @@ cython_debug/
 ./dataset/caption_encode.tsv
 ./dataset/caption_encode.zip
 outs.zip
+*.zip
+*.tsv
+*.tar.gz
 

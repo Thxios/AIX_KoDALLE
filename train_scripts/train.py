@@ -120,9 +120,9 @@ class KoBARTConditionalGeneration(Base):
     def __init__(self, hparams, trainer=None, **kwargs):
         super(KoBARTConditionalGeneration, self).__init__(hparams, trainer, **kwargs)
         self.model = BartForConditionalGeneration.from_pretrained('gogamza/kobart-base-v1', cache_dir='.cache')
-        self.model.lm_head = nn.Linear(768, 16400)
-        self.model.final_logits_bias = torch.zeros([1, 16400])
-        print(self.model.final_logits_bias)
+        # self.model.lm_head = nn.Linear(768, 16400)
+        # self.model.final_logits_bias = torch.zeros([1, 16400])
+        # print(self.model.final_logits_bias)
         self.freeze_pretrained()
         self.model.train()
         self.bos_token = '<s>'

@@ -11,22 +11,17 @@ data_dir = '../dataset/caption_encode_train.tsv'
 if __name__ == '__main__':
     tokenizer = PreTrainedTokenizerFast.from_pretrained('gogamza/kobart-base-v1', cache_dir='../.cache')
     print('loaded tokenizer')
-    docs_pd = pd.read_csv(data_dir, sep='\t')
-    print('loaded df')
-    print(docs_pd.shape)
-    print(docs_pd.loc[376414])
+    print(tokenizer.vocab_size)
     # docs_pd.drop(376414, inplace=True)
-    docs_pd.dropna(inplace=True)
-    print(docs_pd.shape)
+    # docs_pd.dropna(inplace=True)
+    # print(docs_pd.shape)
     # print(docs_pd.loc[376414])
-    for i, caption in enumerate(tqdm(docs_pd['caption'])):
-        try:
-            tokenizer.encode(caption)
-        except TypeError:
-            print(i, caption)
-            print(type(caption))
-    if input('save? [y/n]: ') == 'y':
-        docs_pd.to_csv(data_dir, sep='\t', index=False, encoding='utf-8')
+    # for i, caption in enumerate(tqdm(docs_pd['caption'])):
+    #     try:
+    #         tokenizer.encode(caption)
+    #     except TypeError:
+    #         print(i, caption)
+    #         print(type(caption))
     # caption_ids = list(map(tokenizer.encode, docs_pd['caption']))
     # print(len(caption_ids))
     # print(caption_ids[:5])
