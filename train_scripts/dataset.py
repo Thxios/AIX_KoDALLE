@@ -19,11 +19,14 @@ class KoBARTSummaryDataset(Dataset):
         # self.docs = pd.read_csv(file, sep='\t')
         docs_pd = pd.read_csv(file, sep='\t')
         docs_pd.dropna(inplace=True)
+        self.len = docs_pd.shape[0]
 
         # self.caption = docs_pd['caption'].values.tolist()
-        self.caption_ids = list(map(self.tokenizer.encode, docs_pd['caption']))
-        self.encoding = list(map(eval, docs_pd['encoding']))
-        self.len = docs_pd.shape[0]
+        # self.caption_ids = list(map(self.tokenizer.encode, docs_pd['caption']))
+        # self.encoding = list(map(eval, docs_pd['encoding']))
+
+        self.caption = docs_pd.iloc[:, 0].values.tolist()
+        self.encoding = docs_pd.iloc[:, 1:].values.tolist()
 
         self.pad_index = self.tokenizer.pad_token_id
         self.ignore_index = ignore_index
@@ -49,8 +52,8 @@ class KoBARTSummaryDataset(Dataset):
     def __getitem__(self, idx):
         # instance = self.docs.iloc[idx]
         # input_ids = self.tokenizer.encode(instance['caption'])
-        # input_ids = self.tokenizer.encode(self.caption[idx])
-        input_ids = self.caption_ids[idx]
+        input_ids = self.tokenizer.encode(self.caption[idx])
+        # input_ids = self.caption_ids[idx]
         input_ids = self.add_padding_data(input_ids)
         # # label_ids = self.tokenizer.encode(instance['summary'])
         # label_ids = eval(instance['encoding'])

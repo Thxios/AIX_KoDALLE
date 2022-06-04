@@ -3,10 +3,11 @@ import os
 import pandas as pd
 import numpy as np
 from transformers import PreTrainedTokenizerFast
-from dataset.dataset import KoBARTSummaryDataset, KobartSummaryModule
+from train_scripts.dataset import KoBARTSummaryDataset, KobartSummaryModule
 from tqdm import tqdm
+from time import time, sleep
 
-data_dir = '../dataset/caption_encode_train.tsv'
+data_dir = '../dataset/caption_encode_test.tsv'
 
 if __name__ == '__main__':
     tokenizer = PreTrainedTokenizerFast.from_pretrained('gogamza/kobart-base-v1', cache_dir='../.cache')
@@ -32,18 +33,18 @@ if __name__ == '__main__':
     # print(encoding[:10])
     # print(len(encoding))
 
-    # dataset = KoBARTSummaryDataset(data_dir, tokenizer, 256)
+    dataset = KoBARTSummaryDataset(data_dir, tokenizer, 256)
+    print(dataset[0])
+    print(dataset[1])
+
     # dm = KobartSummaryModule(data_dir,
     #                          data_dir,
     #                          tokenizer,
     #                          batch_size=32,
     #                          max_len=256,
     #                          num_workers=4)
-    # print(dataset[0])
-    # print(dataset[1])
     # dm.setup()
     # print(dm)
-    #
     # for batch in dm.train_dataloader():
     #     print(batch)
     #     break

@@ -162,7 +162,7 @@ class KoBARTConditionalGeneration(Base):
     def validation_step(self, batch, batch_idx):
         outs = self(batch)
         loss = outs['loss']
-        return (loss,)
+        return loss
 
     def validation_epoch_end(self, outputs):
         losses = []

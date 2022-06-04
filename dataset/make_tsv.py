@@ -7,8 +7,8 @@ import pandas as pd
 
 out_path = '../outs'
 caption_path = '../MSCOCO_korean_caption'
-tsv_path_train = 'caption_encode_train.tsv'
-tsv_path_test = 'caption_encode_test.tsv'
+tsv_path_train = 'caption_encode_train_sep.tsv'
+tsv_path_test = 'caption_encode_test_sep.tsv'
 
 out_files = os.listdir(out_path)
 encoding = []
@@ -31,7 +31,8 @@ data = []
 
 for i in tqdm.tqdm(range(len(encoding))):
     for capt in caption[i]['caption_ko']:
-        data.append((capt, encoding[i][1]))
+        # data.append((capt, encoding[i][1]))
+        data.append((capt, *eval(encoding[i][1])))
         # print((capt, encoding[i][1]))
 
 n_data = len(data)
@@ -41,13 +42,15 @@ test_split = 0.1
 train_data, test_data = data[int(test_split*n_data):], data[:int(test_split*n_data)]
 print(f'train {len(train_data)}')
 print(f'test {len(test_data)}')
-train_df = pd.DataFrame(train_data, columns=['caption', 'encoding'])
+# train_df = pd.DataFrame(train_data, columns=['caption', 'encoding'])
+train_df = pd.DataFrame(train_data)
 train_df.dropna(inplace=True)
 print(train_df.head())
 print(train_df.shape)
 train_df.to_csv(tsv_path_train, sep='\t', index=False, encoding='utf-8')
 
-test_df = pd.DataFrame(test_data, columns=['caption', 'encoding'])
+# test_df = pd.DataFrame(test_data, columns=['caption', 'encoding'])
+test_df = pd.DataFrame(test_data)
 test_df.dropna(inplace=True)
 print(test_df.head())
 print(test_df.shape)
