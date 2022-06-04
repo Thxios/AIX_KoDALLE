@@ -42,11 +42,13 @@ train_data, test_data = data[int(test_split*n_data):], data[:int(test_split*n_da
 print(f'train {len(train_data)}')
 print(f'test {len(test_data)}')
 train_df = pd.DataFrame(train_data, columns=['caption', 'encoding'])
+train_df.dropna(inplace=True)
 print(train_df.head())
 print(train_df.shape)
 train_df.to_csv(tsv_path_train, sep='\t', index=False, encoding='utf-8')
 
 test_df = pd.DataFrame(test_data, columns=['caption', 'encoding'])
+test_df.dropna(inplace=True)
 print(test_df.head())
 print(test_df.shape)
 test_df.to_csv(tsv_path_test, sep='\t', index=False, encoding='utf-8')

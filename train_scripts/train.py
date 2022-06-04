@@ -119,14 +119,14 @@ class Base(pl.LightningModule):
 class KoBARTConditionalGeneration(Base):
     def __init__(self, hparams, trainer=None, **kwargs):
         super(KoBARTConditionalGeneration, self).__init__(hparams, trainer, **kwargs)
-        self.model: torch.nn.Module = BartForConditionalGeneration.from_pretrained('gogamza/kobart-base-v1')
-        model.lm_head = nn.Linear(768, 16400)
+        self.model = BartForConditionalGeneration.from_pretrained('gogamza/kobart-base-v1', cache_dir='.cache')
+        self.model.lm_head = nn.Linear(768, 16400)
         self.freeze_pretrained()
         self.model.train()
         self.bos_token = '<s>'
         self.eos_token = '</s>'
 
-        self.tokenizer = PreTrainedTokenizerFast.from_pretrained('gogamza/kobart-base-v1')
+        self.tokenizer = PreTrainedTokenizerFast.from_pretrained('gogamza/kobart-base-v1', cache_dir='.cache')
         self.pad_token_id = self.tokenizer.pad_token_id
 
     def freeze_pretrained(self):
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     parser = ArgsBase.add_model_specific_args(parser)
     parser = KobartSummaryModule.add_model_specific_args(parser)
     parser = pl.Trainer.add_argparse_args(parser)
-    tokenizer = PreTrainedTokenizerFast.from_pretrained('gogamza/kobart-base-v1')
+    tokenizer = PreTrainedTokenizerFast.from_pretrained('gogamza/kobart-base-v1', cache_dir='.cache')
     args = parser.parse_args()
     logging.info(args)
 
