@@ -25,7 +25,7 @@ if __name__ == '__main__':
         except TypeError:
             print(i, caption)
             print(type(caption))
-    if input('save? [y/n]') == 'y':
+    if input('save? [y/n]: ') == 'y':
         docs_pd.to_csv(data_dir, sep='\t', index=False, encoding='utf-8')
     # caption_ids = list(map(tokenizer.encode, docs_pd['caption']))
     # print(len(caption_ids))

@@ -16,8 +16,16 @@ if __name__ == '__main__':
     model: nn.Module = BartForConditionalGeneration.from_pretrained('gogamza/kobart-base-v1', cache_dir='../.cache')
 
     print(model.lm_head)
-    # model.lm_head = nn.Linear(768, 16384, bias=False)
+    model.lm_head = nn.Linear(768, 16400, bias=False)
+    model.final_logits_bias = torch.zeros([1, 16400])
     print(model)
+    print(model.final_logits_bias)
+    print(model.final_logits_bias.size())
+    input_id = torch.LongTensor([[1, 43, 64, 34, 6]])
+    print(input_id.size())
+    out = model(input_id)
+    # print(out)
+    # print()
     # summary(model, (10,), device='cpu')
     cnt = 0
 

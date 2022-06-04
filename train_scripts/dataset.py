@@ -18,6 +18,7 @@ class KoBARTSummaryDataset(Dataset):
         self.max_len = max_len
         # self.docs = pd.read_csv(file, sep='\t')
         docs_pd = pd.read_csv(file, sep='\t')
+        docs_pd.dropna(inplace=True)
 
         # self.caption = docs_pd['caption'].values.tolist()
         self.caption_ids = list(map(self.tokenizer.encode, docs_pd['caption']))

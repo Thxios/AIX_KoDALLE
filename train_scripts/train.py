@@ -121,6 +121,8 @@ class KoBARTConditionalGeneration(Base):
         super(KoBARTConditionalGeneration, self).__init__(hparams, trainer, **kwargs)
         self.model = BartForConditionalGeneration.from_pretrained('gogamza/kobart-base-v1', cache_dir='.cache')
         self.model.lm_head = nn.Linear(768, 16400)
+        self.model.final_logits_bias = torch.zeros([1, 16400])
+        print(self.model.final_logits_bias)
         self.freeze_pretrained()
         self.model.train()
         self.bos_token = '<s>'
@@ -134,6 +136,7 @@ class KoBARTConditionalGeneration(Base):
             param.requires_grad = False
         for param in self.model.lm_head.parameters():
             param.requires_grad = True
+        self.model.final_logits_bias.requires_grad = True
 
     def unfreeze_pretrained(self) -> None:
         for param in self.model.parameters():
@@ -169,20 +172,27 @@ class KoBARTConditionalGeneration(Base):
 
 
 if __name__ == '__main__':
+    print('prepare training...')
+    print()
     parser = Base.add_model_specific_args(parser)
     parser = ArgsBase.add_model_specific_args(parser)
     parser = KobartSummaryModule.add_model_specific_args(parser)
     parser = pl.Trainer.add_argparse_args(parser)
+    print('parsing args completed...')
     tokenizer = PreTrainedTokenizerFast.from_pretrained('gogamza/kobart-base-v1', cache_dir='.cache')
+    print('loaded tokenizer...')
     args = parser.parse_args()
     logging.info(args)
+    print()
 
+    print('prepare datasets...')
     dm = KobartSummaryModule(args.train_file,
                              args.test_file,
                              tokenizer,
                              batch_size=args.batch_size,
                              max_len=args.max_len,
                              num_workers=args.num_workers)
+    print('data module loaded...')
 
     checkpoint_callback = pl.callbacks.ModelCheckpoint(monitor='val_loss',
                                                        dirpath=args.default_root_dir,
@@ -196,6 +206,11 @@ if __name__ == '__main__':
     lr_logger = pl.callbacks.LearningRateMonitor()
     trainer = pl.Trainer.from_argparse_args(args, logger=tb_logger,
                                             callbacks=[checkpoint_callback, lr_logger])
+    print('callback loaded...')
 
+    print('prepare model...')
     model = KoBARTConditionalGeneration(args, trainer)
+    print('model loaded...')
+    print()
+    print('start training...')
     trainer.fit(model, dm)
