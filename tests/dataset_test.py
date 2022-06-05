@@ -13,6 +13,7 @@ if __name__ == '__main__':
     tokenizer = PreTrainedTokenizerFast.from_pretrained('gogamza/kobart-base-v1', cache_dir='../.cache')
     print('loaded tokenizer')
     print(tokenizer.vocab_size)
+    print('eos id:', tokenizer.eos_token_id)
     # docs_pd.drop(376414, inplace=True)
     # docs_pd.dropna(inplace=True)
     # print(docs_pd.shape)
@@ -33,9 +34,8 @@ if __name__ == '__main__':
     # print(encoding[:10])
     # print(len(encoding))
 
-    dataset = KoBARTSummaryDataset(data_dir, tokenizer, 256)
+    dataset = KoBARTSummaryDataset(data_dir, tokenizer, 257)
     print(dataset[0])
-    print(dataset[1])
 
     # dm = KobartSummaryModule(data_dir,
     #                          data_dir,

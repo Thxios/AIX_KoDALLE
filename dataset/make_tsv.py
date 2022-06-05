@@ -5,10 +5,11 @@ import tqdm
 import random as rd
 import pandas as pd
 
-out_path = '../outs'
+img_size = 128
+out_path = f'../outs/outs{img_size}'
 caption_path = '../MSCOCO_korean_caption'
-tsv_path_train = 'caption_encode_train_sep.tsv'
-tsv_path_test = 'caption_encode_test_sep.tsv'
+tsv_path_train = f'caption_encode_train_{img_size}.tsv'
+tsv_path_test = f'caption_encode_test_{img_size}.tsv'
 
 out_files = os.listdir(out_path)
 encoding = []

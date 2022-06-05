@@ -21,12 +21,15 @@ class KoBARTSummaryDataset(Dataset):
         docs_pd.dropna(inplace=True)
         self.len = docs_pd.shape[0]
 
-        # self.caption = docs_pd['caption'].values.tolist()
-        # self.caption_ids = list(map(self.tokenizer.encode, docs_pd['caption']))
+        # self.caption_ids = list(map(self.tokenizer.encode, docs_pd.iloc[:, 0]))
         # self.encoding = list(map(eval, docs_pd['encoding']))
 
-        self.caption = docs_pd.iloc[:, 0].values.tolist()
-        self.encoding = docs_pd.iloc[:, 1:].values.tolist()
+        self.caption = docs_pd.iloc[:, 0].values
+
+        # self.encoding = docs_pd.iloc[:, 1:].values.tolist()
+        self.encoding = docs_pd.iloc[:, 1:].values
+        eos = np.array([self.tokenizer.eos_token_id] * self.len).reshape([-1, 1])
+        self.encoding = np.concatenate([self.encoding, eos], axis=1)
 
         self.pad_index = self.tokenizer.pad_token_id
         self.ignore_index = ignore_index
@@ -52,16 +55,19 @@ class KoBARTSummaryDataset(Dataset):
     def __getitem__(self, idx):
         # instance = self.docs.iloc[idx]
         # input_ids = self.tokenizer.encode(instance['caption'])
-        input_ids = self.tokenizer.encode(self.caption[idx])
+        input_ids = np.array(self.tokenizer.encode(self.caption[idx]))
         # input_ids = self.caption_ids[idx]
         input_ids = self.add_padding_data(input_ids)
-        # # label_ids = self.tokenizer.encode(instance['summary'])
-        # label_ids = eval(instance['encoding'])
-        label_ids = self.encoding[idx]
 
-        label_ids.append(self.tokenizer.eos_token_id)
-        dec_input_ids = [self.tokenizer.eos_token_id]
-        dec_input_ids += label_ids[:-1]
+        # label_ids = self.encoding[idx]
+        # label_ids.append(self.tokenizer.eos_token_id)
+        # dec_input_ids = [self.tokenizer.eos_token_id]
+        # dec_input_ids += label_ids[:-1]
+
+        # label_ids = np.concatenate([self.encoding[idx], [self.tokenizer.eos_token_id]])
+        label_ids = self.encoding[idx]
+        dec_input_ids = np.concatenate([[self.tokenizer.eos_token_id], label_ids[:-1]])
+
         dec_input_ids = self.add_padding_data(dec_input_ids)
         label_ids = self.add_ignored_data(label_ids)
 
@@ -76,7 +82,7 @@ class KoBARTSummaryDataset(Dataset):
 class KobartSummaryModule(pl.LightningDataModule):
     def __init__(self, train_file,
                  test_file, tok,
-                 max_len=256,
+                 max_len=257,
                  batch_size=8,
                  num_workers=4):
         super().__init__()

@@ -17,6 +17,9 @@ parser = argparse.ArgumentParser(description='KoBART Summarization')
 parser.add_argument('--checkpoint_path',
                     type=str,
                     help='checkpoint path')
+parser.add_argument('--freeze_pretrained',
+                    type=int,
+                    default=1,)
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -43,7 +46,7 @@ class ArgsBase():
                             help='')
         parser.add_argument('--max_len',
                             type=int,
-                            default=256,
+                            default=257,
                             help='max seq len')
         return parser
 
@@ -123,7 +126,7 @@ class KoBARTConditionalGeneration(Base):
         # self.model.lm_head = nn.Linear(768, 16400)
         # self.model.final_logits_bias = torch.zeros([1, 16400])
         # print(self.model.final_logits_bias)
-        self.freeze_pretrained()
+        # self.freeze_pretrained()
         self.model.train()
         self.bos_token = '<s>'
         self.eos_token = '</s>'
@@ -210,6 +213,8 @@ if __name__ == '__main__':
 
     print('prepare model...')
     model = KoBARTConditionalGeneration(args, trainer)
+    if args.freeze_pretrained:
+        model.freeze_pretrained()
     print('model loaded...')
     print()
     print('start training...')
