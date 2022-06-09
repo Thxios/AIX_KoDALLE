@@ -165,7 +165,7 @@ class KoBARTConditionalGeneration(Base):
     def training_step(self, batch, batch_idx):
         outs = self(batch)
         loss = outs.loss
-        self.log('train_loss', loss, prog_bar=True)
+        self.log('train_loss', loss.item(), prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -177,7 +177,7 @@ class KoBARTConditionalGeneration(Base):
         losses = []
         for loss in outputs:
             losses.append(loss)
-        self.log('val_loss', torch.stack(losses).mean(), prog_bar=True)
+        self.log('val_loss', torch.stack(losses).mean().item(), prog_bar=True)
 
 
 if __name__ == '__main__':
