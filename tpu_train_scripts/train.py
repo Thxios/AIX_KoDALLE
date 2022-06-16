@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 import transformers
-import webdataset as wds
+from datasets import load_dataset
 from transformers import (
     AutoConfig,
     AutoTokenizer,
@@ -16,7 +16,6 @@ from transformers import (
     set_seed,
     DataCollatorForSeq2Seq,
 )
-from datasets import load_dataset
 from transformers.trainer_utils import get_last_checkpoint
 
 logger = logging.getLogger(__name__)
@@ -31,12 +30,6 @@ class ModelArguments:
     model_name_or_path: str = field(
         default="gogamza/kobart-base-v2",
         metadata={"help": "Path to pretrained model or model identifier from huggingface.co/models"}
-    )
-    config_name: Optional[str] = field(
-        default=None, metadata={"help": "Pretrained config name or path if not the same as model_name"}
-    )
-    tokenizer_name: Optional[str] = field(
-        default=None, metadata={"help": "Pretrained tokenizer name or path if not the same as model_name"}
     )
     cache_dir: Optional[str] = field(
         default=None,
@@ -57,10 +50,6 @@ class DataTrainingArguments:
     validation_file: Optional[str] = field(
         default=None,
         metadata={"help": "An optional input evaluation data file to evaluate the perplexity on (a text file)."},
-    )
-    test_file: Optional[str] = field(
-        default=None,
-        metadata={"help": "An optional input test data file to evaluate the perplexity on (a text file)."},
     )
     preprocessing_num_workers: Optional[int] = field(
         default=None,
@@ -125,12 +114,12 @@ def main():
     set_seed(training_args.seed)
 
     config = AutoConfig.from_pretrained(
-        model_args.config_name if model_args.config_name else model_args.model_name_or_path,
+        model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
         revision=model_args.model_revision,
     )
     tokenizer = AutoTokenizer.from_pretrained(
-        model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
+        model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
         use_fast=True,
         revision=model_args.model_revision,
@@ -151,9 +140,6 @@ def main():
     if data_args.validation_file is not None:
         data_files["validation"] = data_args.validation_file
         extension = data_args.validation_file.split(".")[-1]
-    if data_args.test_file is not None:
-        data_files["test"] = data_args.test_file
-        extension = data_args.test_file.split(".")[-1]
     raw_datasets = load_dataset(extension, data_files=data_files, cache_dir=model_args.cache_dir)
 
     if training_args.do_train:
